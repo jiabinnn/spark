@@ -1,0 +1,6537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.10">
+<title>Structured Streaming</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment @import statement to use as custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*::before,*::after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite::before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
+:not(pre)>code.nobreak{word-wrap:normal}
+:not(pre)>code.nowrap{white-space:nowrap}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details>summary:first-of-type{cursor:pointer;display:list-item;outline:none;margin-bottom:.75em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class="highlight"],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos{border-right:1px solid currentColor;opacity:.35;padding-right:.5em}
+pre.pygments .lineno{border-right:1px solid currentColor;opacity:.35;display:inline-block;margin-right:.75em}
+pre.pygments .lineno::before{content:"";margin-right:-.125em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
+table.tableblock{max-width:100%;border-collapse:separate}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+td.tableblock>.content>:last-child.sidebarblock{margin-bottom:0}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
+table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
+table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
+table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px}
+table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0}
+table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
+table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot,table.frame-ends{border-width:1px 0}
+table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{margin-right:.25em}
+ul.inline{display:-ms-flexbox;display:-webkit-box;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media print,amzn-kf8{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>Structured Streaming</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_1_回顾和展望">1. 回顾和展望</a>
+<ul class="sectlevel2">
+<li><a href="#_1_1_spark_编程模型的进化过程">1.1. Spark 编程模型的进化过程</a></li>
+<li><a href="#_1_2_spark_的_序列化_的进化过程">1.2. Spark 的 序列化 的进化过程</a></li>
+<li><a href="#_1_3_spark_streaming_和_structured_streaming">1.3. Spark Streaming 和 Structured Streaming</a></li>
+</ul>
+</li>
+<li><a href="#_2_structured_streaming_入门案例">2. Structured Streaming 入门案例</a>
+<ul class="sectlevel2">
+<li><a href="#_2_1_需求梳理">2.1. 需求梳理</a></li>
+<li><a href="#_2_2_代码实现">2.2. 代码实现</a></li>
+<li><a href="#_2_3_运行和结果验证">2.3. 运行和结果验证</a></li>
+</ul>
+</li>
+<li><a href="#_3_stuctured_streaming_的体系和结构">3. Stuctured Streaming 的体系和结构</a>
+<ul class="sectlevel2">
+<li><a href="#_3_1_无限扩展的表格">3.1. 无限扩展的表格</a></li>
+<li><a href="#_3_2_体系结构">3.2. 体系结构</a></li>
+</ul>
+</li>
+<li><a href="#_4_source">4. Source</a>
+<ul class="sectlevel2">
+<li><a href="#_4_1_从_hdfs_中读取数据">4.1. 从 HDFS 中读取数据</a></li>
+<li><a href="#_4_2_从_kafka_中读取数据">4.2. 从 Kafka 中读取数据</a></li>
+</ul>
+</li>
+<li><a href="#_5_sink">5. Sink</a>
+<ul class="sectlevel2">
+<li><a href="#_5_1_hdfs_sink">5.1. HDFS Sink</a></li>
+<li><a href="#_5_2_kafka_sink">5.2. Kafka Sink</a></li>
+<li><a href="#_5_3_foreach_writer">5.3. Foreach Writer</a></li>
+<li><a href="#_5_4_自定义_sink">5.4. 自定义 Sink</a></li>
+<li><a href="#_5_5_tigger">5.5. Tigger</a></li>
+<li><a href="#_5_6_从_source_到_sink_的流程">5.6. 从 Source 到 Sink 的流程</a></li>
+<li><a href="#_5_7_错误恢复和容错语义">5.7. 错误恢复和容错语义</a></li>
+</ul>
+</li>
+<li><a href="#_6_有状态算子">6. 有状态算子</a>
+<ul class="sectlevel2">
+<li><a href="#_6_1_常规算子">6.1. 常规算子</a></li>
+<li><a href="#_6_2_分组算子">6.2. 分组算子</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">全天目标</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>回顾和展望</p>
+</li>
+<li>
+<p>入门案例</p>
+</li>
+<li>
+<p><code>Stuctured Streaming</code> 的体系和结构</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_回顾和展望">1. 回顾和展望</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">本章目标</dt>
+<dd>
+<div class="paragraph">
+<p><code>Structured Streaming</code> 是 <code>Spark Streaming</code> 的进化版, 如果了解了 <code>Spark</code> 的各方面的进化过程, 有助于理解 <code>Structured Streaming</code> 的使命和作用</p>
+</div>
+</dd>
+<dt class="hdlist1">本章过程</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Spark</code> 的 <code>API</code> 进化过程</p>
+</li>
+<li>
+<p><code>Spark</code> 的序列化进化过程</p>
+</li>
+<li>
+<p><code>Spark Streaming</code> 和 <code>Structured Streaming</code></p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_1_1_spark_编程模型的进化过程">1.1. Spark 编程模型的进化过程</h3>
+<div class="exampleblock">
+<div class="title">目标和过程</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p><code>Spark</code> 的进化过程中, 一个非常重要的组成部分就是编程模型的进化, 通过编程模型可以看得出来内在的问题和解决方案</p>
+</div>
+</dd>
+<dt class="hdlist1">过程</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>编程模型 <code>RDD</code> 的优点和缺陷</p>
+</li>
+<li>
+<p>编程模型 <code>DataFrame</code> 的优点和缺陷</p>
+</li>
+<li>
+<p>编程模型 <code>Dataset</code> 的优点和缺陷</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190625103618.png" alt="20190625103618" width="800">
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">编程模型</th>
+<th class="tableblock halign-left valign-top">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RDD</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">rdd.flatMap(_.split(" "))
+   .map((_, 1))
+   .reduceByKey(_ + _)
+   .collect</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>针对自定义数据对象进行处理, 可以处理任意类型的对象, 比较符合面向对象</p>
+</li>
+<li>
+<p><code>RDD</code> 无法感知到数据的结构, 无法针对数据结构进行编程</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DataFrame</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">spark.read
+     .csv("...")
+     .where($"name" =!= "")
+     .groupBy($"name")
+     .show()</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>DataFrame</code> 保留有数据的元信息, <code>API</code> 针对数据的结构进行处理, 例如说可以根据数据的某一列进行排序或者分组</p>
+</li>
+<li>
+<p><code>DataFrame</code> 在执行的时候会经过 <code>Catalyst</code> 进行优化, 并且序列化更加高效, 性能会更好</p>
+</li>
+<li>
+<p><code>DataFrame</code> 只能处理结构化的数据, 无法处理非结构化的数据, 因为 <code>DataFrame</code> 的内部使用 <code>Row</code> 对象保存数据</p>
+</li>
+<li>
+<p><code>Spark</code> 为 <code>DataFrame</code> 设计了新的数据读写框架, 更加强大, 支持的数据源众多</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Dataset</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">spark.read
+     .csv("...")
+     .as[Person]
+     .where(_.name != "")
+     .groupByKey(_.name)
+     .count()
+     .show()</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Dataset</code> 结合了 <code>RDD</code> 和 <code>DataFrame</code> 的特点, 从 <code>API</code> 上即可以处理结构化数据, 也可以处理非结构化数据</p>
+</li>
+<li>
+<p><code>Dataset</code> 和 <code>DataFrame</code> 其实是一个东西, 所以 <code>DataFrame</code> 的性能优势, 在 <code>Dataset</code> 上也有</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="exampleblock">
+<div class="title">总结</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>RDD</code> 的优点</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>面向对象的操作方式</p>
+</li>
+<li>
+<p>可以处理任何类型的数据</p>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1"><code>RDD</code> 的缺点</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>运行速度比较慢, 执行过程没有优化</p>
+</li>
+<li>
+<p><code>API</code> 比较僵硬, 对结构化数据的访问和操作没有优化</p>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1"><code>DataFrame</code> 的优点</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>针对结构化数据高度优化, 可以通过列名访问和转换数据</p>
+</li>
+<li>
+<p>增加 <code>Catalyst</code> 优化器, 执行过程是优化的, 避免了因为开发者的原因影响效率</p>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1"><code>DataFrame</code> 的缺点</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>只能操作结构化数据</p>
+</li>
+<li>
+<p>只有无类型的 <code>API</code>, 也就是只能针对列和 <code>SQL</code> 操作数据, <code>API</code> 依然僵硬</p>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1"><code>Dataset</code> 的优点</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>结合了 <code>RDD</code> 和 <code>DataFrame</code> 的 <code>API</code>, 既可以操作结构化数据, 也可以操作非结构化数据</p>
+</li>
+<li>
+<p>既有有类型的 <code>API</code> 也有无类型的 <code>API</code>, 灵活选择</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_2_spark_的_序列化_的进化过程">1.2. Spark 的 序列化 的进化过程</h3>
+<div class="exampleblock">
+<div class="title">目标和过程</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p><code>Spark</code> 中的序列化过程决定了数据如何存储, 是性能优化一个非常重要的着眼点, <code>Spark</code> 的进化并不只是针对编程模型提供的 <code>API</code>, 在大数据处理中, 也必须要考虑性能</p>
+</div>
+</dd>
+<dt class="hdlist1">过程</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>序列化和反序列化是什么</p>
+</li>
+<li>
+<p><code>Spark</code> 中什么地方用到序列化和反序列化</p>
+</li>
+<li>
+<p><code>RDD</code> 的序列化和反序列化如何实现</p>
+</li>
+<li>
+<p><code>Dataset</code> 的序列化和反序列化如何实现</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Step 1: 什么是序列化和序列化</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>在 <code>Java</code> 中, 序列化的代码大概如下</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">public class JavaSerializable implements Serializable {
+  NonSerializable ns = new NonSerializable();
+}
+
+public class NonSerializable {
+
+}
+
+public static void main(String[] args) throws IOException {
+  // 序列化
+  JavaSerializable serializable = new JavaSerializable();
+  ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("/tmp/obj.ser"));
+  // 这里会抛出一个 "java.io.NotSerializableException: cn.itcast.NonSerializable" 异常
+  objectOutputStream.writeObject(serializable);
+  objectOutputStream.flush();
+  objectOutputStream.close();
+
+  // 反序列化
+  FileInputStream fileInputStream = new FileInputStream("/tmp/obj.ser");
+  ObjectInputStream objectOutputStream = new ObjectInputStream(fileInputStream);
+  JavaSerializable serializable1 = objectOutputStream.readObject();
+}</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">序列化是什么</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>序列化的作用就是可以将对象的内容变成二进制, 存入文件中保存</p>
+</li>
+<li>
+<p>反序列化指的是将保存下来的二进制对象数据恢复成对象</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">序列化对对象的要求</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>对象必须实现 <code>Serializable</code> 接口</p>
+</li>
+<li>
+<p>对象中的所有属性必须都要可以被序列化, 如果出现无法被序列化的属性, 则序列化失败</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">限制</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>对象被序列化后, 生成的二进制文件中, 包含了很多环境信息, 如对象头, 对象中的属性字段等, 所以内容相对较大</p>
+</li>
+<li>
+<p>因为数据量大, 所以序列化和反序列化的过程比较慢</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">序列化的应用场景</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>持久化对象数据</p>
+</li>
+<li>
+<p>网络中不能传输 <code>Java</code> 对象, 只能将其序列化后传输二进制数据</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Step 2: 在 <code>Spark</code> 中的序列化和反序列化的应用场景</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Task</code> 分发</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627194356.png" alt="20190627194356" width="800">
+</div>
+</div>
+<div class="paragraph">
+<p><code>Task</code> 是一个对象, 想在网络中传输对象就必须要先序列化</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>RDD</code> 缓存</p>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val rdd1 = rdd.flatMap(_.split(" "))
+   .map((_, 1))
+   .reduceByKey(_ + _)
+
+rdd1.cache
+
+rdd1.collect</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>RDD</code> 中处理的是对象, 例如说字符串, <code>Person</code> 对象等</p>
+</li>
+<li>
+<p>如果缓存 <code>RDD</code> 中的数据, 就需要缓存这些对象</p>
+</li>
+<li>
+<p>对象是不能存在文件中的, 必须要将对象序列化后, 将二进制数据存入文件</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>广播变量</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627195544.png" alt="20190627195544" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>广播变量会分发到不同的机器上, 这个过程中需要使用网络, 对象在网络中传输就必须先被序列化</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>Shuffle</code> 过程</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627200225.png" alt="20190627200225" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Shuffle</code> 过程是由 <code>Reducer</code> 从 <code>Mapper</code> 中拉取数据, 这里面涉及到两个需要序列化对象的原因</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>RDD</code> 中的数据对象需要在 <code>Mapper</code> 端落盘缓存, 等待拉取</p>
+</li>
+<li>
+<p><code>Mapper</code> 和 <code>Reducer</code> 要传输数据对象</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>Spark Streaming</code> 的 <code>Receiver</code></p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627200730.png" alt="20190627200730" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Spark Streaming</code> 中获取数据的组件叫做 <code>Receiver</code>, 获取到的数据也是对象形式, 在获取到以后需要落盘暂存, 就需要对数据对象进行序列化</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>算子引用外部对象</p>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">class Unserializable(i: Int)
+
+rdd.map(i =&gt; new Unserializable(i))
+   .collect
+   .foreach(println)</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>在 <code>Map</code> 算子的函数中, 传入了一个 <code>Unserializable</code> 的对象</p>
+</li>
+<li>
+<p><code>Map</code> 算子的函数是会在整个集群中运行的, 那 <code>Unserializable</code> 对象就需要跟随 <code>Map</code> 算子的函数被传输到不同的节点上</p>
+</li>
+<li>
+<p>如果 <code>Unserializable</code> 不能被序列化, 则会报错</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Step 3: <code>RDD</code> 的序列化</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627202022.png" alt="20190627202022" width="800">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>RDD</code> 的序列化</dt>
+<dd>
+<div class="paragraph">
+<p>RDD 的序列化只能使用 Java 序列化器, 或者 Kryo 序列化器</p>
+</div>
+</dd>
+<dt class="hdlist1">为什么?</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>RDD 中存放的是数据对象, 要保留所有的数据就必须要对对象的元信息进行保存, 例如对象头之类的</p>
+</li>
+<li>
+<p>保存一整个对象, 内存占用和效率会比较低一些</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><code>Kryo</code> 是什么</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Kryo</code> 是 <code>Spark</code> 引入的一个外部的序列化工具, 可以增快 <code>RDD</code> 的运行速度</p>
+</li>
+<li>
+<p>因为 <code>Kryo</code> 序列化后的对象更小, 序列化和反序列化的速度非常快</p>
+</li>
+<li>
+<p>在 <code>RDD</code> 中使用 <code>Kryo</code> 的过程如下</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val conf = new SparkConf()
+  .setMaster("local[2]")
+  .setAppName("KyroTest")
+
+conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+conf.registerKryoClasses(Array(classOf[Person]))
+
+val sc = new SparkContext(conf)
+
+rdd.map(arr =&gt; Person(arr(0), arr(1), arr(2)))</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Step 4: <code>DataFrame</code> 和 <code>Dataset</code> 中的序列化</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">历史的问题</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><code>RDD</code> 中无法感知数据的组成, 无法感知数据结构, 只能以对象的形式处理数据</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><code>DataFrame</code> 和 <code>Dataset</code> 的特点</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>DataFrame</code> 和 <code>Dataset</code> 是为结构化数据优化的</p>
+</li>
+<li>
+<p>在 <code>DataFrame</code> 和 <code>Dataset</code> 中, 数据和数据的 <code>Schema</code> 是分开存储的</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">spark.read
+     .csv("...")
+     .where($"name" =!= "")
+     .groupBy($"name")
+     .map(row: Row =&gt; row)
+     .show()</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>DataFrame</code> 中没有数据对象这个概念, 所有的数据都以行的形式存在于 <code>Row</code> 对象中, <code>Row</code> 中记录了每行数据的结构, 包括列名, 类型等</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627214134.png" alt="20190627214134" width="800">
+</div>
+</div>
+</li>
+<li>
+<p><code>Dataset</code> 中上层可以提供有类型的 <code>API</code>, 用以操作数据, 但是在内部, 无论是什么类型的数据对象 <code>Dataset</code> 都使用一个叫做 <code>InternalRow</code> 的类型的对象存储数据</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val dataset: Dataset[Person] = spark.read.csv(...).as[Person]</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">优化点 1: 元信息独立</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>RDD</code> 不保存数据的元信息, 所以只能使用 <code>Java Serializer</code> 或者 <code>Kyro Serializer</code> 保存 <strong>整个对象</strong></p>
+</li>
+<li>
+<p><code>DataFrame</code> 和 <code>Dataset</code> 中保存了数据的元信息, 所以可以把元信息独立出来分开保存</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627233424.png" alt="20190627233424" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>一个 <code>DataFrame</code> 或者一个 <code>Dataset</code> 中, 元信息只需要保存一份, 序列化的时候, 元信息不需要参与</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627233851.png" alt="20190627233851" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>在反序列化 ( <code>InternalRow &#8594; Object</code> ) 时加入 <code>Schema</code> 信息即可</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190627234337.png" alt="20190627234337" width="800">
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>元信息不再参与序列化, 意味着数据存储量的减少, 和效率的增加</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">优化点 2: 使用堆外内存</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>DataFrame</code> 和 <code>Dataset</code> 不再序列化元信息, 所以内存使用大大减少. 同时新的序列化方式还将数据存入堆外内存中, 从而避免 <code>GC</code> 的开销.</p>
+</li>
+<li>
+<p>堆外内存又叫做 <code>Unsafe</code>, 之所以叫不安全的, 因为不能使用 <code>Java</code> 的垃圾回收机制, 需要自己负责对象的创建和回收, 性能很好, 但是不建议普通开发者使用, 毕竟不安全</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="title">总结</div>
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>当需要将对象缓存下来的时候, 或者在网络中传输的时候, 要把对象转成二进制, 在使用的时候再将二进制转为对象, 这个过程叫做序列化和反序列化</p>
+</li>
+<li>
+<p>在 <code>Spark</code> 中有很多场景需要存储对象, 或者在网络中传输对象</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>Task</code> 分发的时候, 需要将任务序列化, 分发到不同的 <code>Executor</code> 中执行</p>
+</li>
+<li>
+<p>缓存 <code>RDD</code> 的时候, 需要保存 <code>RDD</code> 中的数据</p>
+</li>
+<li>
+<p>广播变量的时候, 需要将变量序列化, 在集群中广播</p>
+</li>
+<li>
+<p><code>RDD</code> 的 <code>Shuffle</code> 过程中 <code>Map</code> 和 <code>Reducer</code> 之间需要交换数据</p>
+</li>
+<li>
+<p>算子中如果引入了外部的变量, 这个外部的变量也需要被序列化</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><code>RDD</code> 因为不保留数据的元信息, 所以必须要序列化整个对象, 常见的方式是 <code>Java</code> 的序列化器, 和 <code>Kyro</code> 序列化器</p>
+</li>
+<li>
+<p><code>Dataset</code> 和 <code>DataFrame</code> 中保留数据的元信息, 所以可以不再使用 <code>Java</code> 的序列化器和 <code>Kyro</code> 序列化器, 使用 <code>Spark</code> 特有的序列化协议, 生成 <code>UnsafeInternalRow</code> 用以保存数据, 这样不仅能减少数据量, 也能减少序列化和反序列化的开销, 其速度大概能达到 <code>RDD</code> 的序列化的 <code>20</code> 倍左右</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_3_spark_streaming_和_structured_streaming">1.3. Spark Streaming 和 Structured Streaming</h3>
+<div class="exampleblock">
+<div class="title">目标和过程</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>理解 <code>Spark Streaming</code> 和 <code>Structured Streaming</code> 之间的区别, 是非常必要的, 从这点上可以理解 <code>Structured Streaming</code> 的过去和产生契机</p>
+</div>
+</dd>
+<dt class="hdlist1">过程</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Spark Streaming</code> 时代</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 时代</p>
+</li>
+<li>
+<p><code>Spark Streaming</code> 和 <code>Structured Streaming</code></p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>Spark Streaming</code> 时代</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628010204.png" alt="20190628010204" width="450">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Spark Streaming</code> 其实就是 <code>RDD</code> 的 <code>API</code> 的流式工具, 其本质还是 <code>RDD</code>, 存储和执行过程依然类似 <code>RDD</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><code>Structured Streaming</code> 时代</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628010542.png" alt="20190628010542" width="450">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Structured Streaming</code> 其实就是 <code>Dataset</code> 的 <code>API</code> 的流式工具, <code>API</code> 和 <code>Dataset</code> 保持高度一致</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><code>Spark Streaming</code> 和 <code>Structured Streaming</code></dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Structured Streaming</code> 相比于 <code>Spark Streaming</code> 的进步就类似于 <code>Dataset</code> 相比于 <code>RDD</code> 的进步</p>
+</li>
+<li>
+<p>另外还有一点, <code>Structured Streaming</code> 已经支持了连续流模型, 也就是类似于 <code>Flink</code> 那样的实时流, 而不是小批量, 但在使用的时候仍然有限制, 大部分情况还是应该采用小批量模式</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>在 <code>2.2.0</code> 以后 <code>Structured Streaming</code> 被标注为稳定版本, 意味着以后的 <code>Spark</code> 流式开发不应该在采用 <code>Spark Streaming</code> 了</p>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_structured_streaming_入门案例">2. Structured Streaming 入门案例</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>了解 <code>Structured Streaming</code> 的编程模型, 为理解 <code>Structured Streaming</code> 时候是什么, 以及核心体系原理打下基础</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>需求梳理</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 代码实现</p>
+</li>
+<li>
+<p>运行</p>
+</li>
+<li>
+<p>验证结果</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_2_1_需求梳理">2.1. 需求梳理</h3>
+<div class="exampleblock">
+<div class="title">目标和过程</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>理解接下来要做的案例, 有的放矢</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>需求</p>
+</li>
+<li>
+<p>整体结构</p>
+</li>
+<li>
+<p>开发方式</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">需求</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628144128.png" alt="20190628144128" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>编写一个流式计算的应用, 不断的接收外部系统的消息</p>
+</li>
+<li>
+<p>对消息中的单词进行词频统计</p>
+</li>
+<li>
+<p>统计全局的结果</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">整体结构</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628131804.png" alt="20190628131804" width="800">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Socket Server</code> 等待 <code>Structured Streaming</code> 程序连接</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 程序启动, 连接 <code>Socket Server</code>, 等待 <code>Socket Server</code> 发送数据</p>
+</li>
+<li>
+<p><code>Socket Server</code> 发送数据, <code>Structured Streaming</code> 程序接收数据</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 程序接收到数据后处理数据</p>
+</li>
+<li>
+<p>数据处理后, 生成对应的结果集, 在控制台打印</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">开发方式和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><code>Socket server</code> 使用 <code>Netcat nc</code> 来实现</p>
+</div>
+<div class="paragraph">
+<p><code>Structured Streaming</code> 程序使用 <code>IDEA</code> 实现, 在 <code>IDEA</code> 中本地运行</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>编写代码</p>
+</li>
+<li>
+<p>启动 <code>nc</code> 发送 <code>Socket</code> 消息</p>
+</li>
+<li>
+<p>运行代码接收 <code>Socket</code> 消息统计词频</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="title">总结</div>
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>简单来说, 就是要进行流式的词频统计, 使用 <code>Structured Streaming</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_2_代码实现">2.2. 代码实现</h3>
+<div class="exampleblock">
+<div class="title">目标和过程</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>实现 <code>Structured Streaming</code> 部分的代码编写</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建文件</p>
+</li>
+<li>
+<p>创建 <code>SparkSession</code></p>
+</li>
+<li>
+<p>读取 <code>Socket</code> 数据生成 <code>DataFrame</code></p>
+</li>
+<li>
+<p>将 <code>DataFrame</code> 转为 <code>Dataset</code>, 使用有类型的 <code>API</code> 处理词频统计</p>
+</li>
+<li>
+<p>生成结果集, 并写入控制台</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">object SocketProcessor {
+
+  def main(args: Array[String]): Unit = {
+
+    // 1. 创建 SparkSession
+    val spark = SparkSession.builder()
+      .master("local[6]")
+      .appName("socket_processor")
+      .getOrCreate()
+
+    spark.sparkContext.setLogLevel("ERROR")   <i class="conum" data-value="1"></i><b>(1)</b>
+
+    import spark.implicits._
+
+    // 2. 读取外部数据源, 并转为 Dataset[String]
+    val source = spark.readStream
+      .format("socket")
+      .option("host", "127.0.0.1")
+      .option("port", 9999)
+      .load()
+      .as[String]                             <i class="conum" data-value="2"></i><b>(2)</b>
+
+    // 3. 统计词频
+    val words = source.flatMap(_.split(" "))
+      .map((_, 1))
+      .groupByKey(_._1)
+      .count()
+
+    // 4. 输出结果
+    words.writeStream
+      .outputMode(OutputMode.Complete())      <i class="conum" data-value="3"></i><b>(3)</b>
+      .format("console")                      <i class="conum" data-value="4"></i><b>(4)</b>
+      .start()                                <i class="conum" data-value="5"></i><b>(5)</b>
+      .awaitTermination()                     <i class="conum" data-value="6"></i><b>(6)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>调整 <code>Log</code> 级别, 避免过多的 <code>Log</code> 影响视线</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>默认 <code>readStream</code> 会返回 <code>DataFrame</code>, 但是词频统计更适合使用 <code>Dataset</code> 的有类型 <code>API</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>统计全局结果, 而不是一个批次</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>将结果输出到控制台</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>开始运行流式应用</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>阻塞主线程, 在子线程中不断获取数据</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="title">总结</div>
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Structured Streaming</code> 中的编程步骤依然是先读, 后处理, 最后落地</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 中的编程模型依然是 <code>DataFrame</code> 和 <code>Dataset</code></p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 中依然是有外部数据源读写框架的, 叫做 <code>readStream</code> 和 <code>writeStream</code></p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 和 <code>SparkSQL</code> 几乎没有区别, 唯一的区别是, <code>readStream</code> 读出来的是流, <code>writeStream</code> 是将流输出, 而 <code>SparkSQL</code> 中的批处理使用 <code>read</code> 和 <code>write</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_3_运行和结果验证">2.3. 运行和结果验证</h3>
+<div class="exampleblock">
+<div class="title">目标和过程</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>代码已经编写完毕, 需要运行, 并查看结果集, 因为从结果集的样式中可以看到 <code>Structured Streaming</code> 的一些原理</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>开启 <code>Socket server</code></p>
+</li>
+<li>
+<p>运行程序</p>
+</li>
+<li>
+<p>查看数据集</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">开启 <code>Socket server</code> 和运行程序</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>在虚拟机 <code>node01</code> 中运行 <code>nc -lk 9999</code></p>
+</li>
+<li>
+<p>在 IDEA 中运行程序</p>
+</li>
+<li>
+<p>在 <code>node01</code> 中输入以下内容</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="text" class="language-text hljs">hello world
+hello spark
+hello hadoop
+hello spark
+hello spark</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">查看结果集</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="text" class="language-text hljs">-------------------------------------------
+Batch: 4
+-------------------------------------------
++------+--------+
+| value|count(1)|
++------+--------+
+| hello|       5|
+| spark|       3|
+| world|       1|
+|hadoop|       1|
++------+--------+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>从结果集中可以观察到以下内容</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Structured Streaming</code> 依然是小批量的流处理</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 的输出是类似 <code>DataFrame</code> 的, 也具有 <code>Schema</code>, 所以也是针对结构化数据进行优化的</p>
+</li>
+<li>
+<p>从输出的时间特点上来看, 是一个批次先开始, 然后收集数据, 再进行展示, 这一点和 <code>Spark Streaming</code> 不太一样</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="title">总结</div>
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>运行的时候需要先开启 <code>Socket server</code></p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 的 API 和运行也是针对结构化数据进行优化过的</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_stuctured_streaming_的体系和结构">3. Stuctured Streaming 的体系和结构</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>了解 <code>Structured Streaming</code> 的体系结构和核心原理, 有两点好处, 一是需要了解原理才好进行性能调优, 二是了解原理后, 才能理解代码执行流程, 从而更好的记忆, 也做到知其然更知其所以然</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>WordCount</code> 的执行原理</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 的体系结构</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_3_1_无限扩展的表格">3.1. 无限扩展的表格</h3>
+<div class="exampleblock">
+<div class="title">目标和过程</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p><code>Structured Streaming</code> 是一个复杂的体系, 由很多组件组成, 这些组件之间也会进行交互, 如果无法站在整体视角去观察这些组件之间的关系, 也无法理解 <code>Structured Streaming</code> 的全局</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>了解 <code>Dataset</code> 这个计算模型和流式计算的关系</p>
+</li>
+<li>
+<p>如何使用 <code>Dataset</code> 处理流式数据?</p>
+</li>
+<li>
+<p><code>WordCount</code> 案例的执行过程和原理</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>Dataset</code> 和流式计算</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>可以理解为 <code>Spark</code> 中的 <code>Dataset</code> 有两种, 一种是处理静态批量数据的 <code>Dataset</code>, 一种是处理动态实时流的 <code>Dataset</code>, 这两种 <code>Dataset</code> 之间的区别如下</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>流式的 <code>Dataset</code> 使用 <code>readStream</code> 读取外部数据源创建, 使用 <code>writeStream</code> 写入外部存储</p>
+</li>
+<li>
+<p>批式的 <code>Dataset</code> 使用 <code>read</code> 读取外部数据源创建, 使用 <code>write</code> 写入外部存储</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">如何使用 <code>Dataset</code> 这个编程模型表示流式计算?</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628191649.png" alt="20190628191649" width="600">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>可以把流式的数据想象成一个不断增长, 无限无界的表</p>
+</li>
+<li>
+<p>无论是否有界, 全都使用 <code>Dataset</code> 这一套 <code>API</code></p>
+</li>
+<li>
+<p>通过这样的做法, 就能完全保证流和批的处理使用完全相同的代码, 减少这两种处理方式的差异</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><code>WordCount</code> 的原理</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628232818.png" alt="20190628232818" width="700">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>整个计算过程大致上分为如下三个部分</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Source</code>, 读取数据源</p>
+</li>
+<li>
+<p><code>Query</code>, 在流式数据上的查询</p>
+</li>
+<li>
+<p><code>Result</code>, 结果集生成</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>整个的过程如下</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>随着时间段的流动, 对外部数据进行批次的划分</p>
+</li>
+<li>
+<p>在逻辑上, 将缓存所有的数据, 生成一张无限扩展的表, 在这张表上进行查询</p>
+</li>
+<li>
+<p>根据要生成的结果类型, 来选择是否生成基于整个数据集的结果</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="title">总结</div>
+<div class="content">
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628235321.png" alt="20190628235321" width="600">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Dataset</code> 不仅可以表达流式数据的处理, 也可以表达批量数据的处理</p>
+</li>
+<li>
+<p><code>Dataset</code> 之所以可以表达流式数据的处理, 因为 <code>Dataset</code> 可以模拟一张无限扩展的表, 外部的数据会不断的流入到其中</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_2_体系结构">3.2. 体系结构</h3>
+<div class="exampleblock">
+<div class="title">目标和过程</div>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p><code>Structured Streaming</code> 是一个复杂的体系, 由很多组件组成, 这些组件之间也会进行交互, 如果无法站在整体视角去观察这些组件之间的关系, 也无法理解 <code>Structured Streaming</code> 的核心原理</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>体系结构</p>
+</li>
+<li>
+<p><code>StreamExecution</code> 的执行顺序</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">体系结构</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>在 <code>Structured Streaming</code> 中负责整体流程和执行的驱动引擎叫做 <code>StreamExecution</code></p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190629111018.png" alt="20190629111018" width="700">
+</div>
+</div>
+<div class="paragraph">
+<p><code>StreamExecution</code> 在流上进行基于 <code>Dataset</code> 的查询, 也就是说, <code>Dataset</code> 之所以能够在流上进行查询, 是因为 <code>StreamExecution</code> 的调度和管理</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>StreamExecution</code> 如何工作?</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190629100439.png" alt="20190629100439" width="700">
+</div>
+</div>
+<div class="paragraph">
+<p><code>StreamExecution</code> 分为三个重要的部分</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Source</code>, 从外部数据源读取数据</p>
+</li>
+<li>
+<p><code>LogicalPlan</code>, 逻辑计划, 在流上的查询计划</p>
+</li>
+<li>
+<p><code>Sink</code>, 对接外部系统, 写入结果</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><code>StreamExecution</code> 的执行顺序</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190629113627.png" alt="20190629113627" width="800">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>根据进度标记, 从 <code>Source</code> 获取到一个由 <code>DataFrame</code> 表示的批次, 这个 <code>DataFrame</code> 表示数据的源头</p>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val source = spark.readStream
+  .format("socket")
+  .option("host", "127.0.0.1")
+  .option("port", 9999)
+  .load()
+  .as[String]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>这一点非常类似 <code>val df = spark.read.csv()</code> 所生成的 <code>DataFrame</code>, 同样都是表示源头</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>根据源头 <code>DataFrame</code> 生成逻辑计划</p>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val words = source.flatMap(_.split(" "))
+  .map((_, 1))
+  .groupByKey(_._1)
+  .count()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>上述代码表示的就是数据的查询, 这一个步骤将这样的查询步骤生成为逻辑执行计划</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>优化逻辑计划最终生成物理计划</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/67b14d92b21b191914800c384cbed439.png" alt="67b14d92b21b191914800c384cbed439" width="800">
+</div>
+</div>
+<div class="paragraph">
+<p>这一步其实就是使用 <code>Catalyst</code> 对执行计划进行优化, 经历基于规则的优化和基于成本模型的优化</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>执行物理计划将表示执行结果的 <code>DataFrame / Dataset</code> 交给 <code>Sink</code></p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>整个物理执行计划会针对每一个批次的数据进行处理, 处理后每一个批次都会生成一个表示结果的 <code>Dataset</code></p>
+</div>
+<div class="paragraph">
+<p><code>Sink</code> 可以将每一个批次的结果 <code>Dataset</code> 落地到外部数据源</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>执行完毕后, 汇报 <code>Source</code> 这个批次已经处理结束, <code>Source</code> 提交并记录最新的进度</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">增量查询</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>核心问题</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628232818.png" alt="20190628232818" width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>上图中清晰的展示了最终的结果生成是全局的结果, 而不是一个批次的结果, 但是从 <code>StreamExecution</code> 中可以看到, 针对流的处理是按照一个批次一个批次来处理的</p>
+</div>
+<div class="paragraph">
+<p>那么, 最终是如何生成全局的结果集呢?</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>状态记录</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190629115459.png" alt="20190629115459" width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>在 <code>Structured Streaming</code> 中有一个全局范围的高可用 <code>StateStore</code>, 这个时候针对增量的查询变为如下步骤</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>从 <code>StateStore</code> 中取出上次执行完成后的状态</p>
+</li>
+<li>
+<p>把上次执行的结果加入本批次, 再进行计算, 得出全局结果</p>
+</li>
+<li>
+<p>将当前批次的结果放入 <code>StateStore</code> 中, 留待下次使用</p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190629123847.png" alt="20190629123847" width="800">
+</div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="title">总结</div>
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>StreamExecution</code> 是整个 <code>Structured Streaming</code> 的核心, 负责在流上的查询</p>
+</li>
+<li>
+<p><code>StreamExecution</code> 中三个重要的组成部分, 分别是 <code>Source</code> 负责读取每个批量的数据, <code>Sink</code> 负责将结果写入外部数据源, <code>Logical Plan</code> 负责针对每个小批量生成执行计划</p>
+</li>
+<li>
+<p><code>StreamExecution</code> 中使用 <code>StateStore</code> 来进行状态的维护</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_source">4. Source</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和过程</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>流式计算一般就是通过数据源读取数据, 经过一系列处理再落地到某个地方, 所以这一小节先了解一下如何读取数据, 可以整合哪些数据源</p>
+</div>
+</dd>
+<dt class="hdlist1">过程</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>从 <code>HDFS</code> 中读取数据</p>
+</li>
+<li>
+<p>从 <code>Kafka</code> 中读取数据</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_4_1_从_hdfs_中读取数据">4.1. 从 HDFS 中读取数据</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和过程</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>在数据处理的时候, 经常会遇到这样的场景</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190630160310.png" alt="20190630160310" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>有时候也会遇到这样的场景</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190630160448.png" alt="20190630160448" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>以上两种场景有两个共同的特点</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>会产生大量小文件在 <code>HDFS</code> 上</p>
+</li>
+<li>
+<p>数据需要处理</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>通过本章节的学习, 便能够更深刻的理解这种结构, 具有使用 <code>Structured Streaming</code> 整合 <code>HDFS</code>, 从其中读取数据的能力</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>案例结构</p>
+</li>
+<li>
+<p>产生小文件并推送到 <code>HDFS</code></p>
+</li>
+<li>
+<p>流式计算统计 <code>HDFS</code> 上的小文件</p>
+</li>
+<li>
+<p>运行和总结</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="_4_1_1_案例结构">4.1.1. 案例结构</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过本章节可以了解案例的过程和步骤, 以及案例的核心意图</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>案例结构</p>
+</li>
+<li>
+<p>实现步骤</p>
+</li>
+<li>
+<p>难点和易错点</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">案例流程</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190715111534.png" alt="20190715111534" width="800">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>编写 <code>Python</code> 小程序, 在某个目录生成大量小文件</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Python</code> 是解释型语言, 其程序可以直接使用命令运行无需编译, 所以适合编写快速使用的程序, 很多时候也使用 <code>Python</code> 代替 <code>Shell</code></p>
+</li>
+<li>
+<p>使用 <code>Python</code> 程序创建新的文件, 并且固定的生成一段 <code>JSON</code> 文本写入文件</p>
+</li>
+<li>
+<p>在真实的环境中, 数据也是一样的不断产生并且被放入 <code>HDFS</code> 中, 但是在真实场景下, 可能是 <code>Flume</code> 把小文件不断上传到 <code>HDFS</code> 中, 也可能是 <code>Sqoop</code> 增量更新不断在某个目录中上传小文件</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>使用 <code>Structured Streaming</code> 汇总数据</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>HDFS</code> 中的数据是不断的产生的, 所以也是流式的数据</p>
+</li>
+<li>
+<p>数据集是 <code>JSON</code> 格式, 要有解析 <code>JSON</code> 的能力</p>
+</li>
+<li>
+<p>因为数据是重复的, 要对全局的流数据进行汇总和去重, 其实真实场景下的数据清洗大部分情况下也是要去重的</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>使用控制台展示数据</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>最终的数据结果以表的形式呈现</p>
+</li>
+<li>
+<p>使用控制台展示数据意味着不需要在修改展示数据的代码, 将 <code>Sink</code> 部分的内容放在下一个大章节去说明</p>
+</li>
+<li>
+<p>真实的工作中, 可能数据是要落地到 <code>MySQL</code>, <code>HBase</code>, <code>HDFS</code> 这样的存储系统中</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">实现步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Step 1: 编写 <code>Python</code> 脚本不断的产生数据</p>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>使用 <code>Python</code> 创建字符串保存文件中要保存的数据</p>
+</li>
+<li>
+<p>创建文件并写入文件内容</p>
+</li>
+<li>
+<p>使用 <code>Python</code> 调用系统 <code>HDFS</code> 命令上传文件</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Step 2: 编写 <code>Structured Streaming</code> 程序处理数据</p>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建 <code>SparkSession</code></p>
+</li>
+<li>
+<p>使用 <code>SparkSession</code> 的 <code>readStream</code> 读取数据源</p>
+</li>
+<li>
+<p>使用 <code>Dataset</code> 操作数据, 只需要去重</p>
+</li>
+<li>
+<p>使用 <code>Dataset</code> 的 <code>writeStream</code> 设置 <code>Sink</code> 将数据展示在控制台中</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Step 3: 部署程序, 验证结果</p>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>上传脚本到服务器中, 使用 <code>python</code> 命令运行脚本</p>
+</li>
+<li>
+<p>开启流计算应用, 读取 HDFS 中对应目录的数据</p>
+</li>
+<li>
+<p>查看运行结果</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">难点和易错点</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>在读取 <code>HDFS</code> 的文件时, <code>Source</code> 不仅对接数据源, 也负责反序列化数据源中传过来的数据</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Source</code> 可以从不同的数据源中读取数据, 如 <code>Kafka</code>, <code>HDFS</code></p>
+</li>
+<li>
+<p>数据源可能会传过来不同的数据格式, 如 <code>JSON</code>, <code>Parquet</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>读取 <code>HDFS</code> 文件的这个 <code>Source</code> 叫做 <code>FileStreamSource</code></p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>从命名就可以看出来这个 <code>Source</code> 不仅支持 <code>HDFS</code>, 还支持本地文件读取, 亚马逊云, 阿里云 等文件系统的读取, 例如: <code>file://</code>, <code>s3://</code>, <code>oss://</code></p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>基于流的 <code>Dataset</code> 操作和基于静态数据集的 <code>Dataset</code> 操作是一致的</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>整个案例运行的逻辑是</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Python</code> 程序产生数据到 <code>HDFS</code> 中</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 从 <code>HDFS</code> 中获取数据</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 处理数据</p>
+</li>
+<li>
+<p>将数据展示在控制台</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>整个案例的编写步骤</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Python</code> 程序</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 程序</p>
+</li>
+<li>
+<p>运行</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_1_2_产生小文件并推送到_hdfs">4.1.2. 产生小文件并推送到 HDFS</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过本章节看到 <code>Python</code> 的大致语法, 并了解 Python 如何编写脚本完成文件的操作, 其实不同的语言使用起来并没有那么难, 完成一些简单的任务还是很简单的</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建 <code>Python</code> 代码文件</p>
+</li>
+<li>
+<p>编写代码</p>
+</li>
+<li>
+<p>本地测试, 但是因为本地环境搭建比较浪费大家时间, 所以暂时不再本地测试</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码编写</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>随便在任一目录中创建文件 <code>gen_files.py</code>, 编写以下内容</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="python" class="language-python hljs">import os
+
+for index in range(100):
+    content = """
+    {"name":"Michael"}
+    {"name":"Andy", "age":30}
+    {"name":"Justin", "age":19}
+    """
+
+    file_name = "/export/dataset/text{0}.json".format(index)
+
+    with open(file_name, "w") as file:  <i class="conum" data-value="1"></i><b>(1)</b>
+        file.write(content)
+
+    os.system("/export/servers/hadoop/bin/hdfs dfs -mkdir -p /dataset/dataset/")
+    os.system("/export/servers/hadoop/bin/hdfs dfs -put {0} /dataset/dataset/".format(file_name))</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>创建文件, 使用这样的写法是因为 <code>with</code> 是一种 <code>Python</code> 的特殊语法, 如果使用 <code>with</code> 去创建文件的话, 使用结束后会自动关闭流</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Python</code> 的语法灵活而干净, 比较易于编写</p>
+</li>
+<li>
+<p>对于其它的语言可以玩乐性质的去使用, 其实并没有很难</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_1_3_流式计算统计_hdfs_上的小文件">4.1.3. 流式计算统计 HDFS 上的小文件</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过本章节的学习, 大家可以了解到如何使用 <code>Structured Streaming</code> 读取 <code>HDFS</code> 中的文件, 并以 <code>JSON</code> 的形式解析</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建文件</p>
+</li>
+<li>
+<p>编写代码</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val spark = SparkSession.builder()
+  .appName("hdfs_source")
+  .master("local[6]")
+  .getOrCreate()
+
+spark.sparkContext.setLogLevel("WARN")
+
+val userSchema = new StructType()
+  .add("name", "string")
+  .add("age", "integer")
+
+val source = spark
+  .readStream
+  .schema(userSchema)
+  .json("hdfs://node01:8020/dataset/dataset")
+
+val result = source.distinct()
+
+result.writeStream
+  .outputMode(OutputMode.Update())
+  .format("console")
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>以流的形式读取某个 HDFS 目录的代码为</p>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val source = spark
+  .readStream         <i class="conum" data-value="1"></i><b>(1)</b>
+  .schema(userSchema) <i class="conum" data-value="2"></i><b>(2)</b>
+  .json("hdfs://node01:8020/dataset/dataset") <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>指明读取的是一个流式的 <code>Dataset</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>指定读取到的数据的 <code>Schema</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>指定目录位置, 以及数据格式</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_1_4_运行和流程总结">4.1.4. 运行和流程总结</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过这个小节对案例的部署以后, 不仅大家可以学到一种常见的部署方式, 同时也能对案例的执行流程和流计算有更深入的了解</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>运行 <code>Python</code> 程序</p>
+</li>
+<li>
+<p>运行 <code>Spark</code> 程序</p>
+</li>
+<li>
+<p>总结</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">运行 Python 程序</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>上传 <code>Python</code> 源码文件到服务器中</p>
+</li>
+<li>
+<p>运行 <code>Python</code> 脚本</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs"># 进入 Python 文件被上传的位置
+cd ~
+
+# 创建放置生成文件的目录
+mkdir -p /export/dataset
+
+# 运行程序
+python gen_files.py</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">运行 Spark 程序</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>使用 <code>Maven</code> 打包</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190716000942.png" alt="20190716000942" width="300">
+</div>
+</div>
+</li>
+<li>
+<p>上传至服务器</p>
+</li>
+<li>
+<p>运行 <code>Spark</code> 程序</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs"># 进入保存 Jar 包的文件夹
+cd ~
+
+# 运行流程序
+spark-submit --class cn.itcast.structured.HDFSSource ./original-streaming-0.0.1.jar</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190715111534.png" alt="20190715111534" width="800">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Python</code> 生成文件到 <code>HDFS</code>, 这一步在真实环境下, 可能是由 <code>Flume</code> 和 <code>Sqoop</code> 收集并上传至 <code>HDFS</code></p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 从 <code>HDFS</code> 中读取数据并处理</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 讲结果表展示在控制台</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_2_从_kafka_中读取数据">4.2. 从 Kafka 中读取数据</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过本章节的学习, 便可以理解流式系统和队列间的关系, 同时能够编写代码从 <code>Kafka</code> 以流的方式读取数据</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Kafka</code> 回顾</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 整合 <code>Kafka</code></p>
+</li>
+<li>
+<p>读取 <code>JSON</code> 格式的内容</p>
+</li>
+<li>
+<p>读取多个 <code>Topic</code> 的数据</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="_4_2_1_kafka_的场景和结构">4.2.1 Kafka 的场景和结构</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过这一个小节的学习, 大家可以理解 <code>Kfaka</code> 在整个系统中的作用, 日后工作的话, 也必须要先站在更高层去理解系统的组成, 才能完成功能和代码</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Kafka</code> 的应用场景</p>
+</li>
+<li>
+<p><code>Kafka</code> 的特点</p>
+</li>
+<li>
+<p><code>Topic</code> 和 <code>Partitions</code></p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Kafka 是一个 Pub / Sub 系统</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Pub / Sub</code> 是 <code>Publisher / Subscriber</code> 的简写, 中文称作为发布订阅系统</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717102628.png" alt="20190717102628" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>发布订阅系统可以有多个 <code>Publisher</code> 对应一个 <code>Subscriber</code>, 例如多个系统都会产生日志, 通过这样的方式, 一个日志处理器可以简单的获取所有系统产生的日志</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717103721.png" alt="20190717103721" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>发布订阅系统也可以一个 <code>Publisher</code> 对应多个 <code>Subscriber</code>, 这样就类似于广播了, 例如通过这样的方式可以非常轻易的将一个订单的请求分发给所有感兴趣的系统, 减少耦合性</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717104041.png" alt="20190717104041" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>当然, 在大数据系统中, 这样的消息系统往往可以作为整个数据平台的入口, 左边对接业务系统各个模块, 右边对接数据系统各个计算工具</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717104853.png" alt="20190717104853" width="800">
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Kafka 的特点</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><code>Kafka</code> 有一个非常重要的应用场景就是对接业务系统和数据系统, 作为一个数据管道, 其需要流通的数据量惊人, 所以 <code>Kafka</code> 如果要满足这种场景的话, 就一定具有以下两个特点</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>高吞吐量</p>
+</li>
+<li>
+<p>高可靠性</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Topic 和 Partitions</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>消息和事件经常是不同类型的, 例如用户注册是一种消息, 订单创建也是一种消息</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717110142.png" alt="20190717110142" width="800">
+</div>
+</div>
+</li>
+<li>
+<p><code>Kafka</code> 中使用 <code>Topic</code> 来组织不同类型的消息</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717110431.png" alt="20190717110431" width="800">
+</div>
+</div>
+</li>
+<li>
+<p><code>Kafka</code> 中的 <code>Topic</code> 要承受非常大的吞吐量, 所以 <code>Topic</code> 应该是可以分片的, 应该是分布式的</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717122114.png" alt="20190717122114" width="400">
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Kafka</code> 的应用场景</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>一般的系统中, 业务系统会不止一个, 数据系统也会比较复杂</p>
+</li>
+<li>
+<p>为了减少业务系统和数据系统之间的耦合, 要将其分开, 使用一个中间件来流转数据</p>
+</li>
+<li>
+<p>Kafka 因为其吞吐量超高, 所以适用于这种场景</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>Kafka</code> 如何保证高吞吐量</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>因为消息会有很多种类, <code>Kafka</code> 中可以创建多个队列, 每一个队列就是一个 <code>Topic</code>, 可以理解为是一个主题, 存放相关的消息</p>
+</li>
+<li>
+<p>因为 <code>Topic</code> 直接存放消息, 所以 <code>Topic</code> 必须要能够承受非常大的通量, 所以 <code>Topic</code> 是分布式的, 是可以分片的, 使用分布式的并行处理能力来解决高通量的问题</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_2_2_kafka_和_structured_streaming_整合的结构">4.2.2. Kafka 和 Structured Streaming 整合的结构</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过本小节可以理解 <code>Kafka</code> 和 <code>Structured Streaming</code> 整合的结构原理, 同时还能理解 <code>Spark</code> 连接 <code>Kafka</code> 的时候一个非常重要的参数</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Topic</code> 的 <code>Offset</code></p>
+</li>
+<li>
+<p><code>Kafka</code> 和 <code>Structured Streaming</code> 的整合结构</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 读取 <code>Kafka</code> 消息的三种方式</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Topic 的 Offset</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Topic</code> 是分区的, 每一个 <code>Topic</code> 的分区分布在不同的 <code>Broker</code> 上</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717161413.png" alt="20190717161413" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>每个分区都对应一系列的 <code>Log</code> 文件, 消息存在于 <code>Log</code> 中, 消息的 <code>ID</code> 就是这条消息在本分区的 <code>Offset</code> 偏移量</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717162840.png" alt="20190717162840" width="400">
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><code>Offset</code> 又称作为偏移量, 其实就是一个东西距离另外一个东西的距离</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190717165649.png" alt="20190717165649" width="800">
+</div>
+</div>
+<div class="paragraph">
+<p><code>Kafka</code> 中使用 <code>Offset</code> 命名消息, 而不是指定 <code>ID</code> 的原因是想表示永远自增, <code>ID</code> 是可以指定的, 但是 <code>Offset</code> 只能是一个距离值, 它只会越来越大, 所以, 叫做 <code>Offset</code> 而不叫 <code>ID</code> 也是这个考虑, 消息只能追加到 <code>Log</code> 末尾, 只能增长不能减少</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Kafka 和 Structured Streaming 整合的结构</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190718022525.png" alt="20190718022525" width="800">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">分析</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Structured Streaming</code> 中使用 <code>Source</code> 对接外部系统, 对接 <code>Kafka</code> 的 <code>Source</code> 叫做 <code>KafkaSource</code></p>
+</li>
+<li>
+<p><code>KafkaSource</code> 中会使用 <code>KafkaSourceRDD</code> 来映射外部 <code>Kafka</code> 的 <code>Topic</code>, 两者的 <code>Partition</code> 一一对应</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">结论</dt>
+<dd>
+<div class="paragraph">
+<p><code>Structured Streaming</code> 会并行的从 <code>Kafka</code> 中获取数据</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Structured Streaming 读取 Kafka 消息的三种方式</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190718023534.png" alt="20190718023534" width="400">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Earliest</code> 从每个 <code>Kafka</code> 分区最开始处开始获取</p>
+</li>
+<li>
+<p><code>Assign</code> 手动指定每个 <code>Kafka</code> 分区中的 <code>Offset</code></p>
+</li>
+<li>
+<p><code>Latest</code> 不再处理之前的消息, 只获取流计算启动后新产生的数据</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Kafka</code> 中的消息存放在某个 <code>Topic</code> 的某个 <code>Partition</code> 中, 消息是不可变的, 只会在消息过期的时候从最早的消息开始删除, 消息的 <code>ID</code> 也叫做 <code>Offset</code>, 并且只能正增长</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 整合 <code>Kafka</code> 的时候, 会并行的通过 <code>Offset</code> 从所有 <code>Topic</code> 的 <code>Partition</code> 中获取数据</p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 在从 <code>Kafka</code> 读取数据的时候, 可以选择从最早的地方开始读取, 也可以选择从任意位置读取, 也可以选择只读取最新的</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_2_3_需求介绍">4.2.3. 需求介绍</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过本章节的学习, 可以掌握一个常见的需求, 并且了解后面案例的编写步骤</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>需求</p>
+</li>
+<li>
+<p>数据</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">需求</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>模拟一个智能物联网系统的数据统计</p>
+<div class="exampleblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190718151808.png" alt="20190718151808" width="500">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>有一个智能家居品牌叫做 <code>Nest</code>, 他们主要有两款产品, 一个是恒温器, 一个是摄像头</p>
+</li>
+<li>
+<p>恒温器的主要作用是通过感应器识别家里什么时候有人, 摄像头主要作用是通过学习算法来识别出现在摄像头中的人是否是家里人, 如果不是则报警</p>
+</li>
+<li>
+<p>所以这两个设备都需要统计一个指标, 就是家里什么时候有人, 此需求就是针对这个设备的一部分数据, 来统计家里什么时候有人</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>使用生产者在 Kafka 的 Topic : streaming-test 中输入 JSON 数据</p>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="json" class="language-json hljs">{
+  "devices": {
+    "cameras": {
+      "device_id": "awJo6rH",
+      "last_event": {
+        "has_sound": true,
+        "has_motion": true,
+        "has_person": true,
+        "start_time": "2016-12-29T00:00:00.000Z",
+        "end_time": "2016-12-29T18:42:00.000Z"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>使用 Structured Streaming 来过滤出来家里有人的数据</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>把数据转换为 <code>时间 &#8594; 是否有人</code> 这样类似的形式</p>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">数据转换</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>追踪 JSON 数据的格式</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>可以在一个在线的工具 <code><a href="https://jsonformatter.org/" class="bare">https://jsonformatter.org/</a></code> 中格式化 <code>JSON</code>, 会发现 <code>JSON</code> 格式如下</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190720000717.png" alt="20190720000717" width="300">
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>反序列化</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><code>JSON</code> 数据本质上就是字符串, 只不过这个字符串是有结构的, 虽然有结构, 但是很难直接从字符串中取出某个值</p>
+</div>
+<div class="paragraph">
+<p>而反序列化, 就是指把 <code>JSON</code> 数据转为对象, 或者转为 <code>DataFrame</code>, 可以直接使用某一个列或者某一个字段获取数据, 更加方便</p>
+</div>
+<div class="paragraph">
+<p>而想要做到这件事, 必须要先根据数据格式, 编写 <code>Schema</code> 对象, 从而通过一些方式转为 <code>DataFrame</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val eventType = new StructType()
+  .add("has_sound", BooleanType, nullable = true)
+  .add("has_motion", BooleanType, nullable = true)
+  .add("has_person", BooleanType, nullable = true)
+  .add("start_time", DateType, nullable = true)
+  .add("end_time", DateType, nullable = true)
+
+val camerasType = new StructType()
+  .add("device_id", StringType, nullable = true)
+  .add("last_event", eventType, nullable = true)
+
+val devicesType = new StructType()
+  .add("cameras", camerasType, nullable = true)
+
+val schema = new StructType()
+  .add("devices", devicesType, nullable = true)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>业务简单来说, 就是收集智能家居设备的数据, 通过流计算的方式计算其特征规律</p>
+</li>
+<li>
+<p><code>Kafka</code> 常见的业务场景就是对接业务系统和数据系统</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>业务系统经常会使用 JSON 作为数据传输格式</p>
+</li>
+<li>
+<p>所以使用 <code>Structured Streaming</code> 来对接 <code>Kafka</code> 并反序列化 <code>Kafka</code> 中的 <code>JSON</code> 格式的消息, 是一个非常重要的技能</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>无论使用什么方式, 如果想反序列化 <code>JSON</code> 数据, 就必须要先追踪 <code>JSON</code> 数据的结构</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_2_4_使用_spark_流计算连接_kafka_数据源">4.2.4. 使用 Spark 流计算连接 Kafka 数据源</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过本章节的数据, 能够掌握如何使用 <code>Structured Streaming</code> 对接 <code>Kafka</code>, 从其中获取数据</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建 <code>Topic</code> 并输入数据到 <code>Topic</code></p>
+</li>
+<li>
+<p><code>Spark</code> 整合 <code>kafka</code></p>
+</li>
+<li>
+<p>读取到的 <code>DataFrame</code> 的数据结构</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">创建 Topic 并输入数据到 Topic</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>使用命令创建 <code>Topic</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">bin/kafka-topics.sh --create --topic streaming-test --replication-factor 1 --partitions 3 --zookeeper node01:2181</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>开启 <code>Producer</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">bin/kafka-console-producer.sh --broker-list node01:9092,node02:9092,node03:9092 --topic streaming-test</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>把 <code>JSON</code> 转为单行输入</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">{"devices":{"cameras":{"device_id":"awJo6rH","last_event":{"has_sound":true,"has_motion":true,"has_person":true,"start_time":"2016-12-29T00:00:00.000Z","end_time":"2016-12-29T18:42:00.000Z"}}}}</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">使用 Spark 读取 Kafka 的 Topic</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>编写 <code>Spark</code> 代码读取 <code>Kafka Topic</code></p>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val source = spark.readStream
+  .format("kafka")
+  .option("kafka.bootstrap.servers", "node01:9092,node01:9092,node03:9092")
+  .option("subscribe", "streaming_test")
+  .option("startingOffsets", "earliest")
+  .load()</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>三个参数</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>kafka.bootstrap.servers</code> : 指定 <code>Kafka</code> 的 <code>Server</code> 地址</p>
+</li>
+<li>
+<p><code>subscribe</code> : 要监听的 <code>Topic</code>, 可以传入多个, 传入多个 Topic 则监听多个 Topic, 也可以使用 <code>topic-*</code> 这样的通配符写法</p>
+</li>
+<li>
+<p><code>startingOffsets</code> : 从什么位置开始获取数据, 可选值有 <code>earliest</code>, <code>assign</code>, <code>latest</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>format</code> 设置为 <code>Kafka</code> 指定使用 <code>KafkaSource</code> 读取数据</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>思考: 从 <code>Kafka</code> 中应该获取到什么?</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>业务系统有很多种类型, 有可能是 <code>Web</code> 程序, 有可能是物联网</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190720132133.png" alt="20190720132133" width="800">
+</div>
+</div>
+<div class="paragraph">
+<p>前端大多数情况下使用 <code>JSON</code> 做数据交互</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>问题1: 业务系统如何把数据给 <code>Kafka</code> ?</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190720134513.png" alt="20190720134513" width="800">
+</div>
+</div>
+<div class="paragraph">
+<p>可以主动或者被动的把数据交给 <code>Kafka</code>, 但是无论使用什么方式, 都在使用 <code>Kafka</code> 的 <code>Client</code> 类库来完成这件事, <code>Kafka</code> 的类库调用方式如下</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">Producer&lt;String, String&gt; producer = new KafkaProducer&lt;String, String&gt;(properties);
+producer.send(new ProducerRecord&lt;String, String&gt;("HelloWorld", msg));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>其中发给 <code>Kafka</code> 的消息是 <code>KV</code> 类型的</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>问题2: 使用 <code>Structured Streaming</code> 访问 <code>Kafka</code> 获取数据的时候, 需要什么东西呢?</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>需求1: 存储当前处理过的 <code>Kafka</code> 的 <code>Offset</code></p>
+</li>
+<li>
+<p>需求2: 对接多个 <code>Kafka Topic</code> 的时候, 要知道这条数据属于哪个 <code>Topic</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>结论</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Kafka</code> 中收到的消息是 <code>KV</code> 类型的, 有 <code>Key</code>, 有 <code>Value</code></p>
+</li>
+<li>
+<p><code>Structured Streaming</code> 对接 <code>Kafka</code> 的时候, 每一条 <code>Kafka</code> 消息不能只是 <code>KV</code>, 必须要有 <code>Topic</code>, <code>Partition</code> 之类的信息</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>从 <code>Kafka</code> 获取的 <code>DataFrame</code> 格式</p>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">source.printSchema()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>结果如下</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="text" class="language-text hljs">root
+ |-- key: binary (nullable = true)
+ |-- value: binary (nullable = true)
+ |-- topic: string (nullable = true)
+ |-- partition: integer (nullable = true)
+ |-- offset: long (nullable = true)
+ |-- timestamp: timestamp (nullable = true)
+ |-- timestampType: integer (nullable = true)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>从 <code>Kafka</code> 中读取到的并不是直接是数据, 而是一个包含各种信息的表格, 其中每个字段的含义如下</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">类型</th>
+<th class="tableblock halign-left valign-top">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>key</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>binary</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Kafka</code> 消息的 <code>Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>binary</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Kafka</code> 消息的 <code>Value</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>topic</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>string</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">本条消息所在的 <code>Topic</code>, 因为整合的时候一个 <code>Dataset</code> 可以对接多个 <code>Topic</code>, 所以有这样一个信息</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>partition</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>integer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">消息的分区号</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>offset</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>long</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">消息在其分区的偏移量</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>timestamp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>timestamp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">消息进入 <code>Kafka</code> 的时间戳</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>timestampType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>integer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">时间戳类型</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>一定要把 <code>JSON</code> 转为一行, 再使用 <code>Producer</code> 发送, 不然会出现获取多行的情况</p>
+</li>
+<li>
+<p>使用 Structured Streaming 连接 Kafka 的时候, 需要配置如下三个参数</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>kafka.bootstrap.servers</code> : 指定 <code>Kafka</code> 的 <code>Server</code> 地址</p>
+</li>
+<li>
+<p><code>subscribe</code> : 要监听的 <code>Topic</code>, 可以传入多个, 传入多个 Topic 则监听多个 Topic, 也可以使用 <code>topic-*</code> 这样的通配符写法</p>
+</li>
+<li>
+<p><code>startingOffsets</code> : 从什么位置开始获取数据, 可选值有 <code>earliest</code>, <code>assign</code>, <code>latest</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>从 Kafka 获取到的 DataFrame 的 Schema 如下</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="text" class="language-text hljs">root
+ |-- key: binary (nullable = true)
+ |-- value: binary (nullable = true)
+ |-- topic: string (nullable = true)
+ |-- partition: integer (nullable = true)
+ |-- offset: long (nullable = true)
+ |-- timestamp: timestamp (nullable = true)
+ |-- timestampType: integer (nullable = true)</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_4_2_5_json_解析和数据统计">4.2.5. JSON 解析和数据统计</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>通过本章的学习, 便能够解析 <code>Kafka</code> 中的 <code>JSON</code> 数据, <strong>这是一个重点中的重点</strong></p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>JSON</code> 解析</p>
+</li>
+<li>
+<p>数据处理</p>
+</li>
+<li>
+<p>运行测试</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">JSON 解析</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>准备好 <code>JSON</code> 所在的列</p>
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">问题</dt>
+<dd>
+<div class="paragraph">
+<p>由 <code>Dataset</code> 的结构可以知道 <code>key</code> 和 <code>value</code> 列的类型都是 <code>binary</code> 二进制, 所以要将其转为字符串, 才可进行 <code>JSON</code> 解析</p>
+</div>
+</dd>
+<dt class="hdlist1">解决方式</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">source.selectExpr("CAST(key AS STRING) as key", "CAST(value AS STRING) as value")</code></pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>编写 <code>Schema</code> 对照 <code>JSON</code> 的格式</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Key</code> 要对应 <code>JSON</code> 中的 <code>Key</code></p>
+</li>
+<li>
+<p><code>Value</code> 的类型也要对应 <code>JSON</code> 中的 <code>Value</code> 类型</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val eventType = new StructType()
+  .add("has_sound", BooleanType, nullable = true)
+  .add("has_motion", BooleanType, nullable = true)
+  .add("has_person", BooleanType, nullable = true)
+  .add("start_time", DateType, nullable = true)
+  .add("end_time", DateType, nullable = true)
+
+val camerasType = new StructType()
+  .add("device_id", StringType, nullable = true)
+  .add("last_event", eventType, nullable = true)
+
+val devicesType = new StructType()
+  .add("cameras", camerasType, nullable = true)
+
+val schema = new StructType()
+  .add("devices", devicesType, nullable = true)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>因为 <code>JSON</code> 中包含 <code>Date</code> 类型的数据, 所以要指定时间格式化方式</p>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val jsonOptions = Map("timestampFormat" -&gt; "yyyy-MM-dd'T'HH:mm:ss.sss'Z'")</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>使用 <code>from_json</code> 这个 <code>UDF</code> 格式化 <code>JSON</code></p>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">.select(from_json('value, schema, jsonOptions).alias("parsed_value"))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>选择格式化过后的 <code>JSON</code> 中的字段</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>因为 <code>JSON</code> 被格式化过后, 已经变为了 <code>StructType</code>, 所以可以直接获取其中某些字段的值</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">.selectExpr("parsed_value.devices.cameras.last_event.has_person as has_person",
+          "parsed_value.devices.cameras.last_event.start_time as start_time")</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">数据处理</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>统计各个时段有人的数据</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">.filter('has_person === true)
+.groupBy('has_person, 'start_time)
+.count()</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>将数据落地到控制台</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">result.writeStream
+  .outputMode(OutputMode.Complete())
+  .format("console")
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">全部代码</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder()
+  .master("local[6]")
+  .appName("kafka integration")
+  .getOrCreate()
+
+import org.apache.spark.sql.streaming.OutputMode
+import org.apache.spark.sql.types._
+
+val source = spark
+  .readStream
+  .format("kafka")
+  .option("kafka.bootstrap.servers", "node01:9092,node02:9092,node03:9092")
+  .option("subscribe", "streaming-test")
+  .option("startingOffsets", "earliest")
+  .load()
+
+val eventType = new StructType()
+  .add("has_sound", BooleanType, nullable = true)
+  .add("has_motion", BooleanType, nullable = true)
+  .add("has_person", BooleanType, nullable = true)
+  .add("start_time", DateType, nullable = true)
+  .add("end_time", DateType, nullable = true)
+
+val camerasType = new StructType()
+  .add("device_id", StringType, nullable = true)
+  .add("last_event", eventType, nullable = true)
+
+val devicesType = new StructType()
+  .add("cameras", camerasType, nullable = true)
+
+val schema = new StructType()
+  .add("devices", devicesType, nullable = true)
+
+val jsonOptions = Map("timestampFormat" -&gt; "yyyy-MM-dd'T'HH:mm:ss.sss'Z'")
+
+import org.apache.spark.sql.functions._
+import spark.implicits._
+
+val result = source.selectExpr("CAST(key AS STRING) as key", "CAST(value AS STRING) as value")
+    .select(from_json('value, schema, jsonOptions).alias("parsed_value"))
+    .selectExpr("parsed_value.devices.cameras.last_event.has_person as has_person",
+      "parsed_value.devices.cameras.last_event.start_time as start_time")
+    .filter('has_person === true)
+    .groupBy('has_person, 'start_time)
+    .count()
+
+result.writeStream
+  .outputMode(OutputMode.Complete())
+  .format("console")
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">运行测试</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>进入服务器中, 启动 <code>Kafka</code></p>
+</li>
+<li>
+<p>启动 <code>Kafka</code> 的 <code>Producer</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">bin/kafka-console-producer.sh --broker-list node01:9092,node02:9092,node03:9092 --topic streaming-test</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>启动 <code>Spark shell</code> 并拷贝代码进行测试</p>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">./bin/spark-shell --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.0</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>因为需要和 <code>Kafka</code> 整合, 所以在启动的时候需要加载和 <code>Kafka</code> 整合的包 <code>spark-sql-kafka-0-10</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_sink">5. Sink</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>能够串联两端, 理解整个流式应用, 以及其中的一些根本的原理, 比如说容错语义</p>
+</li>
+<li>
+<p>能够知道如何对接外部系统, 写入数据</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>HDFS Sink</code></p>
+</li>
+<li>
+<p><code>Kafka Sink</code></p>
+</li>
+<li>
+<p><code>Foreach Sink</code></p>
+</li>
+<li>
+<p>自定义 <code>Sink</code></p>
+</li>
+<li>
+<p><code>Tiggers</code></p>
+</li>
+<li>
+<p><code>Sink</code> 原理</p>
+</li>
+<li>
+<p>错误恢复和容错语义</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_5_1_hdfs_sink">5.1. HDFS Sink</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>能够使用 <code>Spark</code> 将流式数据的处理结果放入 <code>HDFS</code></p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>场景和需求</p>
+</li>
+<li>
+<p>代码实现</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">场景和需求</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">场景</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Kafka</code> 往往作为数据系统和业务系统之间的桥梁</p>
+</li>
+<li>
+<p>数据系统一般由批量处理和流式处理两个部分组成</p>
+</li>
+<li>
+<p>在 <code>Kafka</code> 作为整个数据平台入口的场景下, 需要使用 <code>StructuredStreaming</code> 接收 <code>Kafka</code> 的数据并放置于 <code>HDFS</code> 上, 后续才可以进行批量处理</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190808023517.png" alt="20190808023517" width="800">
+</div>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">案例需求</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>从 <code>Kafka</code> 接收数据, 从给定的数据集中, 裁剪部分列, 落地于 <code>HDFS</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码实现</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">步骤说明</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>从 <code>Kafka</code> 读取数据, 生成源数据集</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>连接 <code>Kafka</code> 生成 <code>DataFrame</code></p>
+</li>
+<li>
+<p>从 <code>DataFrame</code> 中取出表示 <code>Kafka</code> 消息内容的 <code>value</code> 列并转为 <code>String</code> 类型</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>对源数据集选择列</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>解析 <code>CSV</code> 格式的数据</p>
+</li>
+<li>
+<p>生成正确类型的结果集</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>落地 <code>HDFS</code></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">整体代码</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder()
+  .master("local[6]")
+  .appName("kafka integration")
+  .getOrCreate()
+
+import spark.implicits._
+
+val source = spark
+  .readStream
+  .format("kafka")
+  .option("kafka.bootstrap.servers", "node01:9092,node02:9092,node03:9092")
+  .option("subscribe", "streaming-bank")
+  .option("startingOffsets", "earliest")
+  .load()
+  .selectExpr("CAST(value AS STRING)")
+  .as[String]
+
+val result = source.map {
+  item =&gt;
+    val arr = item.replace("\"", "").split(";")
+    (arr(0).toInt, arr(1).toInt, arr(5).toInt)
+}
+.as[(Int, Int, Int)]
+.toDF("age", "job", "balance")
+
+result.writeStream
+  .format("parquet") // 也可以是 "orc", "json", "csv" 等
+  .option("path", "/dataset/streaming/result/")
+  .start()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_2_kafka_sink">5.2. Kafka Sink</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>掌握什么时候要将流式数据落地至 Kafka, 以及如何落地至 Kafka</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>场景</p>
+</li>
+<li>
+<p>代码</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">场景</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">场景</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>有很多时候, <code>ETL</code> 过后的数据, 需要再次放入 <code>Kafka</code></p>
+</li>
+<li>
+<p>在 <code>Kafka</code> 后, 可能会有流式程序统一将数据落地到 <code>HDFS</code> 或者 <code>HBase</code></p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809014210.png" alt="20190809014210" width="800">
+</div>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">案例需求</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>从 <code>Kafka</code> 中获取数据, 简单处理, 再次放入 <code>Kafka</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>从 <code>Kafka</code> 读取数据, 生成源数据集</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>连接 <code>Kafka</code> 生成 <code>DataFrame</code></p>
+</li>
+<li>
+<p>从 <code>DataFrame</code> 中取出表示 <code>Kafka</code> 消息内容的 <code>value</code> 列并转为 <code>String</code> 类型</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>对源数据集选择列</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>解析 <code>CSV</code> 格式的数据</p>
+</li>
+<li>
+<p>生成正确类型的结果集</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>再次落地 <code>Kafka</code></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder()
+  .master("local[6]")
+  .appName("kafka integration")
+  .getOrCreate()
+
+import spark.implicits._
+
+val source = spark
+  .readStream
+  .format("kafka")
+  .option("kafka.bootstrap.servers", "node01:9092,node02:9092,node03:9092")
+  .option("subscribe", "streaming-bank")
+  .option("startingOffsets", "earliest")
+  .load()
+  .selectExpr("CAST(value AS STRING)")
+  .as[String]
+
+val result = source.map {
+  item =&gt;
+    val arr = item.replace("\"", "").split(";")
+    (arr(0).toInt, arr(1).toInt, arr(5).toInt)
+}
+.as[(Int, Int, Int)]
+.toDF("age", "job", "balance")
+
+result.writeStream
+  .format("kafka")
+  .outputMode(OutputMode.Append())
+  .option("kafka.bootstrap.servers", "node01:9092,node02:9092,node03:9092")
+  .option("topic", "streaming-bank-result")
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_3_foreach_writer">5.3. Foreach Writer</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>掌握 <code>Foreach</code> 模式理解如何扩展 <code>Structured Streaming</code> 的 <code>Sink</code>, 同时能够将数据落地到 <code>MySQL</code></p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>需求</p>
+</li>
+<li>
+<p>代码</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">需求</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>场景</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>大数据有一个常见的应用场景</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>收集业务系统数据</p>
+</li>
+<li>
+<p>数据处理</p>
+</li>
+<li>
+<p>放入 <code>OLTP</code> 数据</p>
+</li>
+<li>
+<p>外部通过 <code>ECharts</code> 获取并处理数据</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>这个场景下, <code>StructuredStreaming</code> 就需要处理数据并放入 <code>MySQL</code> 或者 <code>MongoDB</code>, <code>HBase</code> 中以供 <code>Web</code> 程序可以获取数据, 图表的形式展示在前端</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809115742.png" alt="20190809115742" width="800">
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Foreach 模式::</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>起因</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>在 <code>Structured Streaming</code> 中, 并未提供完整的 <code>MySQL/JDBC</code> 整合工具</p>
+</li>
+<li>
+<p>不止 <code>MySQL</code> 和 <code>JDBC</code>, 可能会有其它的目标端需要写入</p>
+</li>
+<li>
+<p>很多时候 <code>Structured Streaming</code> 需要对接一些第三方的系统, 例如阿里云的云存储, 亚马逊云的云存储等, 但是 <code>Spark</code> 无法对所有第三方都提供支持, 有时候需要自己编写</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>解决方案</p>
+<div class="openblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809122425.png" alt="20190809122425" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>既然无法满足所有的整合需求, <code>StructuredStreaming</code> 提供了 <code>Foreach</code>, 可以拿到每一个批次的数据</p>
+</li>
+<li>
+<p>通过 <code>Foreach</code> 拿到数据后, 可以通过自定义写入方式, 从而将数据落地到其它的系统</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>案例需求::</p>
+<div class="exampleblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809122804.png" alt="20190809122804" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>从 <code>Kafka</code> 中获取数据, 处理后放入 <code>MySQL</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建 <code>DataFrame</code> 表示 <code>Kafka</code> 数据源</p>
+</li>
+<li>
+<p>在源 <code>DataFrame</code> 中选择三列数据</p>
+</li>
+<li>
+<p>创建 <code>ForeachWriter</code> 接收每一个批次的数据落地 <code>MySQL</code></p>
+</li>
+<li>
+<p><code>Foreach</code> 落地数据</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder()
+  .master("local[6]")
+  .appName("kafka integration")
+  .getOrCreate()
+
+import spark.implicits._
+
+val source = spark
+  .readStream
+  .format("kafka")
+  .option("kafka.bootstrap.servers", "node01:9092,node02:9092,node03:9092")
+  .option("subscribe", "streaming-bank")
+  .option("startingOffsets", "earliest")
+  .load()
+  .selectExpr("CAST(value AS STRING)")
+  .as[String]
+
+val result = source.map {
+  item =&gt;
+    val arr = item.replace("\"", "").split(";")
+    (arr(0).toInt, arr(1).toInt, arr(5).toInt)
+}
+.as[(Int, Int, Int)]
+.toDF("age", "job", "balance")
+
+class MySQLWriter extends ForeachWriter[Row] {
+  val driver = "com.mysql.jdbc.Driver"
+  var statement: Statement = _
+  var connection: Connection  = _
+  val url: String = "jdbc:mysql://node01:3306/streaming-bank-result"
+  val user: String = "root"
+  val pwd: String = "root"
+
+  override def open(partitionId: Long, version: Long): Boolean = {
+    Class.forName(driver)
+    connection = DriverManager.getConnection(url, user, pwd)
+    this.statement = connection.createStatement
+    true
+  }
+
+  override def process(value: Row): Unit = {
+    statement.executeUpdate(s"insert into bank values(" +
+      s"${value.getAs[Int]("age")}, " +
+      s"${value.getAs[Int]("job")}, " +
+      s"${value.getAs[Int]("balance")} )")
+  }
+
+  override def close(errorOrNull: Throwable): Unit = {
+    connection.close()
+  }
+}
+
+result.writeStream
+  .foreach(new MySQLWriter)
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_4_自定义_sink">5.4. 自定义 Sink</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Foreach</code> 倾向于一次处理一条数据, 如果想拿到 <code>DataFrame</code> 幂等的插入外部数据源, 则需要自定义 <code>Sink</code></p>
+</li>
+<li>
+<p>了解如何自定义 <code>Sink</code></p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>Spark</code> 加载 <code>Sink</code> 流程分析</p>
+</li>
+<li>
+<p>自定义 <code>Sink</code></p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Spark 加载 Sink 流程分析</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Sink</code> 加载流程</p>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>writeStream</code> 方法中会创建一个 <code>DataStreamWriter</code> 对象</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">def writeStream: DataStreamWriter[T] = {
+  if (!isStreaming) {
+    logicalPlan.failAnalysis(
+      "'writeStream' can be called only on streaming Dataset/DataFrame")
+  }
+  new DataStreamWriter[T](this)
+}</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>在 <code>DataStreamWriter</code> 对象上通过 <code>format</code> 方法指定 <code>Sink</code> 的短名并记录下来</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">def format(source: String): DataStreamWriter[T] = {
+  this.source = source
+  this
+}</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>最终会通过 <code>DataStreamWriter</code> 对象上的 <code>start</code> 方法启动执行, 其中会通过短名创建 <code>DataSource</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val dataSource =
+    DataSource(
+      df.sparkSession,
+      className = source, <i class="conum" data-value="1"></i><b>(1)</b>
+      options = extraOptions.toMap,
+      partitionColumns = normalizedParCols.getOrElse(Nil))</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>传入的 <code>Sink</code> 短名</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>在创建 <code>DataSource</code> 的时候, 会通过一个复杂的流程创建出对应的 <code>Source</code> 和 <code>Sink</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">lazy val providingClass: Class[_] = DataSource.lookupDataSource(className)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>在这个复杂的创建流程中, 有一行最关键的代码, 就是通过 <code>Java</code> 的类加载器加载所有的 <code>DataSourceRegister</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val serviceLoader = ServiceLoader.load(classOf[DataSourceRegister], loader)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>在 <code>DataSourceRegister</code> 中会创建对应的 <code>Source</code> 或者 <code>Sink</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">trait DataSourceRegister {
+
+  def shortName(): String      <i class="conum" data-value="1"></i><b>(1)</b>
+}
+
+trait StreamSourceProvider {
+  def createSource(            <i class="conum" data-value="2"></i><b>(2)</b>
+      sqlContext: SQLContext,
+      metadataPath: String,
+      schema: Option[StructType],
+      providerName: String,
+      parameters: Map[String, String]): Source
+}
+
+trait StreamSinkProvider {
+  def createSink(              <i class="conum" data-value="3"></i><b>(3)</b>
+      sqlContext: SQLContext,
+      parameters: Map[String, String],
+      partitionColumns: Seq[String],
+      outputMode: OutputMode): Sink
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>提供短名</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>创建 <code>Source</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>创建 <code>Sink</code></td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>自定义 <code>Sink</code> 的方式</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>根据前面的流程说明, 有两点非常重要</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Spark</code> 会自动加载所有 <code>DataSourceRegister</code> 的子类, 所以需要通过 <code>DataSourceRegister</code> 加载 <code>Source</code> 和 <code>Sink</code></p>
+</li>
+<li>
+<p>Spark 提供了 <code>StreamSinkProvider</code> 用以创建 <code>Sink</code>, 提供必要的依赖</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>所以如果要创建自定义的 <code>Sink</code>, 需要做两件事</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建一个注册器, 继承 <code>DataSourceRegister</code> 提供注册功能, 继承 <code>StreamSinkProvider</code> 获取创建 <code>Sink</code> 的必备依赖</p>
+</li>
+<li>
+<p>创建一个 <code>Sink</code> 子类</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">自定义 Sink</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>读取 <code>Kafka</code> 数据</p>
+</li>
+<li>
+<p>简单处理数据</p>
+</li>
+<li>
+<p>创建 <code>Sink</code></p>
+</li>
+<li>
+<p>创建 <code>Sink</code> 注册器</p>
+</li>
+<li>
+<p>使用自定义 <code>Sink</code></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder()
+  .master("local[6]")
+  .appName("kafka integration")
+  .getOrCreate()
+
+import spark.implicits._
+
+val source = spark
+  .readStream
+  .format("kafka")
+  .option("kafka.bootstrap.servers", "node01:9092,node02:9092,node03:9092")
+  .option("subscribe", "streaming-bank")
+  .option("startingOffsets", "earliest")
+  .load()
+  .selectExpr("CAST(value AS STRING)")
+  .as[String]
+
+val result = source.map {
+  item =&gt;
+    val arr = item.replace("\"", "").split(";")
+    (arr(0).toInt, arr(1).toInt, arr(5).toInt)
+}
+  .as[(Int, Int, Int)]
+  .toDF("age", "job", "balance")
+
+class MySQLSink(options: Map[String, String], outputMode: OutputMode) extends Sink {
+
+  override def addBatch(batchId: Long, data: DataFrame): Unit = {
+    val userName = options.get("userName").orNull
+    val password = options.get("password").orNull
+    val table = options.get("table").orNull
+    val jdbcUrl = options.get("jdbcUrl").orNull
+
+    val properties = new Properties
+    properties.setProperty("user", userName)
+    properties.setProperty("password", password)
+
+    data.write.mode(outputMode.toString).jdbc(jdbcUrl, table, properties)
+  }
+}
+
+class MySQLStreamSinkProvider extends StreamSinkProvider with DataSourceRegister {
+
+  override def createSink(sqlContext: SQLContext,
+                          parameters: Map[String, String],
+                          partitionColumns: Seq[String],
+                          outputMode: OutputMode): Sink = {
+    new MySQLSink(parameters, outputMode)
+  }
+
+  override def shortName(): String = "mysql"
+}
+
+result.writeStream
+  .format("mysql")
+  .option("username", "root")
+  .option("password", "root")
+  .option("table", "streaming-bank-result")
+  .option("jdbcUrl", "jdbc:mysql://node01:3306/test")
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_tigger">5.5. Tigger</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>掌握如何控制 <code>StructuredStreaming</code> 的处理时间</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>微批次处理</p>
+</li>
+<li>
+<p>连续流处理</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">微批次处理</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>什么是微批次</p>
+<div class="exampleblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190628144128.png" alt="20190628144128" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>并不是真正的流, 而是缓存一个批次周期的数据, 后处理这一批次的数据</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>通用流程</p>
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>根据 <code>Spark</code> 提供的调试用的数据源 <code>Rate</code> 创建流式 <code>DataFrame</code></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Rate</code> 数据源会定期提供一个由两列 <code>timestamp, value</code> 组成的数据, <code>value</code> 是一个随机数</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>处理和聚合数据, 计算每个个位数和十位数各有多少条数据</p>
+<div class="ulist">
+<ul>
+<li>
+<p>对 <code>value</code> 求 <code>log10</code> 即可得出其位数</p>
+</li>
+<li>
+<p>后按照位数进行分组, 最终就可以看到每个位数的数据有多少个</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val spark = SparkSession.builder()
+  .master("local[6]")
+  .appName("socket_processor")
+  .getOrCreate()
+
+import org.apache.spark.sql.functions._
+import spark.implicits._
+
+spark.sparkContext.setLogLevel("ERROR")
+
+val source = spark.readStream
+  .format("rate")
+  .load()
+
+val result = source.select(log10('value) cast IntegerType as 'key, 'value)
+    .groupBy('key)
+    .agg(count('key) as 'count)
+    .select('key, 'count)
+    .where('key.isNotNull)
+    .sort('key.asc)</code></pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>默认方式划分批次</p>
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">介绍</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>默认情况下的 <code>Structured Streaming</code> 程序会运行在微批次的模式下, 当一个批次结束后, 下一个批次会立即开始处理</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>指定落地到 <code>Console</code> 中, 不指定 <code>Trigger</code></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">result.writeStream
+  .outputMode(OutputMode.Complete())
+  .format("console")
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>按照固定时间间隔划分批次</p>
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">介绍</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>使用微批次处理数据, 使用用户指定的时间间隔启动批次, 如果间隔指定为 <code>0</code>, 则尽可能快的去处理, 一个批次紧接着一个批次</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>如果前一批数据提前完成, 待到批次间隔达成的时候再启动下一个批次</p>
+</li>
+<li>
+<p>如果前一批数据延后完成, 下一个批次会在前面批次结束后立即启动</p>
+</li>
+<li>
+<p>如果没有数据可用, 则不启动处理</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>通过 <code>Trigger.ProcessingTime()</code> 指定处理间隔</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">result.writeStream
+  .outputMode(OutputMode.Complete())
+  .format("console")
+  .trigger(Trigger.ProcessingTime("2 seconds"))
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>一次性划分批次</p>
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">介绍</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>只划分一个批次, 处理完成以后就停止 <code>Spark</code> 工作, 当需要启动一下 <code>Spark</code> 处理遗留任务的时候, 处理完就关闭集群的情况下, 这个划分方式非常实用</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>使用 <code>Trigger.Once</code> 一次性划分批次</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">result.writeStream
+  .outputMode(OutputMode.Complete())
+  .format("console")
+  .trigger(Trigger.Once())
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">连续流处理</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>介绍</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>微批次会将收到的数据按照批次划分为不同的 <code>DataFrame</code>, 后执行 <code>DataFrame</code>, 所以其数据的处理延迟取决于每个 <code>DataFrame</code> 的处理速度, 最快也只能在一个 <code>DataFrame</code> 结束后立刻执行下一个, 最快可以达到 <code>100ms</code> 左右的端到端延迟</p>
+</li>
+<li>
+<p>而连续流处理可以做到大约 <code>1ms</code> 的端到端数据处理延迟</p>
+</li>
+<li>
+<p>连续流处理可以达到 <code>at-least-once</code> 的容错语义</p>
+</li>
+<li>
+<p>从 <code>Spark 2.3</code> 版本开始支持连续流处理, 我们所采用的 <code>2.2</code> 版本还没有这个特性, 并且这个特性截止到 <code>2.4</code> 依然是实验性质, 不建议在生产环境中使用</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>操作</p>
+<div class="exampleblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>使用特殊的 <code>Trigger</code> 完成功能</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">代码</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">result.writeStream
+  .outputMode(OutputMode.Complete())
+  .format("console")
+  .trigger(Trigger.Continuous("1 second"))
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>限制</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>只支持 <code>Map</code> 类的有类型操作</p>
+</li>
+<li>
+<p>只支持普通的的 <code>SQL</code> 类操作, 不支持聚合</p>
+</li>
+<li>
+<p><code>Source</code> 只支持 <code>Kafka</code></p>
+</li>
+<li>
+<p><code>Sink</code> 只支持 <code>Kafka</code>, <code>Console</code>, <code>Memory</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_6_从_source_到_sink_的流程">5.6. 从 Source 到 Sink 的流程</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>理解 <code>Source</code> 到 <code>Sink</code> 的整体原理</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>从 <code>Source</code> 到 <code>Sink</code> 的流程</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">从 Source 到 Sink 的流程</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809184239.png" alt="20190809184239" width="800">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>在每个 <code>StreamExecution</code> 的批次最开始, <code>StreamExecution</code> 会向 <code>Source</code> 询问当前 <code>Source</code> 的最新进度, 即最新的 <code>offset</code></p>
+</li>
+<li>
+<p><code>StreamExecution</code> 将 <code>Offset</code> 放到 <code>WAL</code> 里</p>
+</li>
+<li>
+<p><code>StreamExecution</code> 从 <code>Source</code> 获取 <code>start offset</code>, <code>end offset</code> 区间内的数据</p>
+</li>
+<li>
+<p><code>StreamExecution</code> 触发计算逻辑 <code>logicalPlan</code> 的优化与编译</p>
+</li>
+<li>
+<p>计算结果写出给 <code>Sink</code></p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>调用 <code>Sink.addBatch(batchId: Long, data: DataFrame)</code> 完成</p>
+</li>
+<li>
+<p>此时才会由 <code>Sink</code> 的写入操作开始触发实际的数据获取和计算过程</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>在数据完整写出到 <code>Sink</code> 后, <code>StreamExecution</code> 通知 <code>Source</code> 批次 <code>id</code> 写入到 <code>batchCommitLog</code>, 当前批次结束</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_7_错误恢复和容错语义">5.7. 错误恢复和容错语义</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>理解 <code>Structured Streaming</code> 中提供的系统级别容错手段</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>端到端</p>
+</li>
+<li>
+<p>三种容错语义</p>
+</li>
+<li>
+<p><code>Sink</code> 的容错</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">端到端</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809190803.png" alt="20190809190803" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Source</code> 可能是 <code>Kafka</code>, <code>HDFS</code></p>
+</li>
+<li>
+<p><code>Sink</code> 也可能是 <code>Kafka</code>, <code>HDFS</code>, <code>MySQL</code> 等存储服务</p>
+</li>
+<li>
+<p>消息从 <code>Source</code> 取出, 经过 <code>Structured Streaming</code> 处理, 最后落地到 <code>Sink</code> 的过程, 叫做端到端</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">三种容错语义</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>at-most-once</code></p>
+<div class="exampleblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809192258.png" alt="20190809192258" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>在数据从 <code>Source</code> 到 <code>Sink</code> 的过程中, 出错了, <code>Sink</code> 可能没收到数据, 但是不会收到两次, 叫做 <code>at-most-once</code></p>
+</li>
+<li>
+<p>一般错误恢复的时候, 不重复计算, 则是 <code>at-most-once</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>at-least-once</code></p>
+<div class="exampleblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809192258.png" alt="20190809192258" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>在数据从 <code>Source</code> 到 <code>Sink</code> 的过程中, 出错了, <code>Sink</code> 一定会收到数据, 但是可能收到两次, 叫做 <code>at-least-once</code></p>
+</li>
+<li>
+<p>一般错误恢复的时候, 重复计算可能完成也可能未完成的计算, 则是 <code>at-least-once</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>exactly-once</code></p>
+<div class="exampleblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809192258.png" alt="20190809192258" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>在数据从 <code>Source</code> 到 <code>Sink</code> 的过程中, 虽然出错了, <code>Sink</code> 一定恰好收到应该收到的数据, 一条不重复也一条都不少, 即是 <code>exactly-once</code></p>
+</li>
+<li>
+<p>想做到 <code>exactly-once</code> 是非常困难的</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Sink 的容错</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190809192644.png" alt="20190809192644" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>故障恢复一般分为 <code>Driver</code> 的容错和 <code>Task</code> 的容错</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Driver</code> 的容错指的是整个系统都挂掉了</p>
+</li>
+<li>
+<p><code>Task</code> 的容错指的是一个任务没运行明白, 重新运行一次</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>因为 <code>Spark</code> 的 <code>Executor</code> 能够非常好的处理 <code>Task</code> 的容错, 所以我们主要讨论 <code>Driver</code> 的容错, 如果出错的时候</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>读取 <code>WAL offsetlog</code> 恢复出最新的 <code>offsets</code></p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>当 <code>StreamExecution</code> 找到 <code>Source</code> 获取数据的时候, 会将数据的起始放在 <code>WAL offsetlog</code> 中, 当出错要恢复的时候, 就可以从中获取当前处理批次的数据起始, 例如 <code>Kafka</code> 的 <code>Offset</code></p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>读取 <code>batchCommitLog</code> 决定是否需要重做最近一个批次</p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>当 <code>Sink</code> 处理完批次的数据写入时, 会将当前的批次 <code>ID</code> 存入 <code>batchCommitLog</code>, 当出错的时候就可以从中取出进行到哪一个批次了, 和 <code>WAL</code> 对比即可得知当前批次是否处理完</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>如果有必要的话, 当前批次数据重做</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>如果上次执行在 <code>(5)</code> 结束前即失效, 那么本次执行里 <code>Sink</code> 应该完整写出计算结果</p>
+</li>
+<li>
+<p>如果上次执行在 <code>(5)</code> 结束后才失效, 那么本次执行里 <code>Sink</code> 可以重新写出计算结果 (覆盖上次结果), 也可以跳过写出计算结果(因为上次执行已经完整写出过计算结果了)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>这样即可保证每次执行的计算结果, 在 Sink 这个层面, 是 <strong>不重不丢</strong> 的, 即使中间发生过失效和恢复, 所以 <code>Structured Streaming</code> 可以做到 <code>exactly-once</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">容错所需要的存储</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>存储</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>offsetlog</code> 和 <code>batchCommitLog</code> 关乎于错误恢复</p>
+</li>
+<li>
+<p><code>offsetlog</code> 和 <code>batchCommitLog</code> 需要存储在可靠的空间里</p>
+</li>
+<li>
+<p><code>offsetlog</code> 和 <code>batchCommitLog</code> 存储在 <code>Checkpoint</code> 中</p>
+</li>
+<li>
+<p><code>WAL</code> 其实也存在于 <code>Checkpoint</code> 中</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>指定 <code>Checkpoint</code></p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>只有指定了 <code>Checkpoint</code> 路径的时候, 对应的容错功能才可以开启</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">aggDF
+  .writeStream
+  .outputMode("complete")
+  .option("checkpointLocation", "path/to/HDFS/dir") <i class="conum" data-value="1"></i><b>(1)</b>
+  .format("memory")
+  .start()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>指定 <code>Checkpoint</code> 的路径, 这个路径对应的目录必须是 <code>HDFS</code> 兼容的文件系统</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">需要的外部支持</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>如果要做到 <code>exactly-once</code>, 只是 <code>Structured Streaming</code> 能做到还不行, 还需要 <code>Source</code> 和 <code>Sink</code> 系统的支持</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Source</code> 需要支持数据重放</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>当有必要的时候, <code>Structured Streaming</code> 需要根据 <code>start</code> 和 <code>end offset</code> 从 <code>Source</code> 系统中再次获取数据, 这叫做重放</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>Sink</code> 需要支持幂等写入</p>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>如果需要重做整个批次的时候, <code>Sink</code> 要支持给定的 <code>ID</code> 写入数据, 这叫幂等写入, 一个 <code>ID</code> 对应一条数据进行写入, 如果前面已经写入, 则替换或者丢弃, 不能重复</p>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>所以 <code>Structured Streaming</code> 想要做到 <code>exactly-once</code>, 则也需要外部系统的支持, 如下</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Source</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Sources</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">是否可重放</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">原生内置支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">注解</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HDFS</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">已支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">包括但不限于 <code>Text</code>, <code>JSON</code>, <code>CSV</code>, <code>Parquet</code>, <code>ORC</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Kafka</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">已支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Kafka 0.10.0+</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RateStream</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">已支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">以一定速率产生数据</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RDBMS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">待支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">预计后续很快会支持</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Socket</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">不可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">已支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">主要用途是在技术会议和讲座上做 <code>Demo</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">Sink</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Sinks</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">是否幂等写入</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">原生内置支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">注解</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HDFS</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">包括但不限于 <code>Text</code>, <code>JSON</code>, <code>CSV</code>, <code>Parquet</code>, <code>ORC</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ForeachSink</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可定制度非常高的 <code>Sink</code>, 是否可以幂等取决于具体的实现</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RDBMS</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">待支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">预计后续很快会支持</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Kafka</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">不可以</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">支持</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Kafka</code> 目前不支持幂等写入, 所以可能会有重复写入</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_有状态算子">6. 有状态算子</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>了解常见的 <code>Structured Streaming</code> 算子, 能够完成常见的流式计算需求</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>常规算子</p>
+</li>
+<li>
+<p>分组算子</p>
+</li>
+<li>
+<p>输出模式</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">状态</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>无状态算子</p>
+<div class="exampleblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190814171907.png" alt="20190814171907" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>无状态</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>有状态算子</p>
+<div class="exampleblock">
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="https://doc-1256053707.cos.ap-beijing.myqcloud.com/20190814194604.png" alt="20190814194604" width="800">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>有中间状态需要保存</p>
+</li>
+<li>
+<p>增量查询</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_6_1_常规算子">6.1. 常规算子</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>了解 <code>Structured Streaming</code> 的常规数据处理方式</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>案例</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">案例</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>需求</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>给定电影评分数据集 <code>ratings.dat</code>, 位置在 <code>Spark/Files/Dataset/Ratings/ratings.dat</code></p>
+</li>
+<li>
+<p>筛选评分超过三分的电影</p>
+</li>
+<li>
+<p>以追加模式展示数据, 以流的方式来一批数据处理一批数据, 最终每一批次展示为如下效果</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="text" class="language-text hljs">+------+-------+
+|Rating|MovieID|
++------+-------+
+|     5|   1193|
+|     4|   3408|
++------+-------+</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>步骤</p>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建 SparkSession</p>
+</li>
+<li>
+<p>读取并处理数据结构</p>
+</li>
+<li>
+<p>处理数据</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>选择要展示的列</p>
+</li>
+<li>
+<p>筛选超过三分的数据</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>追加模式展示数据到控制台</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>代码</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>读取文件的时候只能读取一个文件夹, 因为是流的操作, 流的场景是源源不断有新的文件读取</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val source = spark.readStream
+  .textFile("dataset/ratings")
+  .map(line =&gt; {
+    val columns = line.split("::")
+    (columns(0).toInt, columns(1).toInt, columns(2).toInt, columns(3).toLong)
+  })
+  .toDF("UserID", "MovieID", "Rating", "Timestamp")
+
+val result = source.select('Rating, 'MovieID)
+    .where('Rating &gt; 3)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>针对静态数据集的很多转换算子, 都可以应用在流式的 <code>Dataset</code> 上, 例如 <code>Map</code>, <code>FlatMap</code>, <code>Where</code>, <code>Select</code> 等</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_6_2_分组算子">6.2. 分组算子</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标和步骤</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">目标</dt>
+<dd>
+<div class="paragraph">
+<p>能够使用分组完成常见需求, 并了解如何扩展行</p>
+</div>
+</dd>
+<dt class="hdlist1">步骤</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>案例</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">案例</dt>
+<dd>
+<div class="sidebarblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>需求</p>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>给定电影数据集 <code>movies.dat</code>, 其中三列 <code>MovieID</code>, <code>Title</code>, <code>Genres</code></p>
+</li>
+<li>
+<p>统计每个分类下的电影数量</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>步骤</p>
+<div class="exampleblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>创建 <code>SparkSession</code></p>
+</li>
+<li>
+<p>读取数据集, 并组织结构</p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>注意 <code>Genres</code> 是 <code>genres1|genres2</code> 形式, 需要分解为数组</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>使用 <code>explode</code> 函数将数组形式的分类变为单值多条形式</p>
+</li>
+<li>
+<p>分组聚合 <code>Genres</code></p>
+</li>
+<li>
+<p>输出结果</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>代码</p>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="scala" class="language-scala hljs">val source = spark.readStream
+  .textFile("dataset/movies")
+  .map(line =&gt; {
+    val columns = line.split("::")
+    (columns(0).toInt, columns(1).toString, columns(2).toString.split("\\|"))
+  })
+  .toDF("MovieID", "Title", "Genres")
+
+val result = source.select(explode('Genres) as 'Genres)
+    .groupBy('Genres)
+    .agg(count('Genres) as 'Count)
+
+result.writeStream
+  .outputMode(OutputMode.Complete())
+  .format("console")
+  .queryName("genres_count")
+  .start()
+  .awaitTermination()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">总结</dt>
+<dd>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>Structured Streaming</code> 不仅支持 <code>groupBy</code>, 还支持 <code>groupByKey</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2019-08-16 10:14:40 +0800
+</div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
+</body>
+</html>
